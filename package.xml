@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<package packagerversion="1.6.1" version="2.0" xmlns="http://pear.php.net/dtd/package-2.0" xmlns:tasks="http://pear.php.net/dtd/tasks-1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://pear.php.net/dtd/tasks-1.0 http://pear.php.net/dtd/tasks-1.0.xsd http://pear.php.net/dtd/package-2.0 http://pear.php.net/dtd/package-2.0.xsd">
+ <name>sfTemperPlugin</name>
+ <channel>plugins.symfony-project.org</channel>
+ <summary>Parse templates to PHP files</summary>
+ <description>Parse templates to PHP files</description>
+ <lead>
+  <name>Carlos Escribano Rey</name>
+  <user>Carlos.Escribano</user>
+  <email>carlos@markhaus.com</email>
+  <active>yes</active>
+ </lead>
+ <date>2009-02-18</date>
+ <time>11:00:00</time>
+ <version>
+  <release>0.1.0</release>
+  <api>0.1.0</api>
+ </version>
+ <stability>
+  <release>beta</release>
+  <api>beta</api>
+ </stability>
+ <license uri="http://www.symfony-project.com/license">MIT license</license>
+ <notes>-</notes>
+ <contents>
+  <dir name="/">
+   <file name="lib/Temper.php" role="data" />
+   <file name="lib/Temper_Tag.php" role="data" />
+   <file name="lib/tags/Tag_Base.php" role="data" />
+   <file name="lib/tags/Tag_Block.php" role="data" />
+   <file name="lib/tags/Tag_Case.php" role="data" />
+   <file name="lib/tags/Tag_Else.php" role="data" />
+   <file name="lib/tags/Tag_Elseif.php" role="data" />
+   <file name="lib/tags/Tag_For.php" role="data" />
+   <file name="lib/tags/Tag_Foreach.php" role="data" />
+   <file name="lib/tags/Tag_If.php" role="data" />
+   <file name="lib/tags/Tag_Import.php" role="data" />
+   <file name="lib/tags/Tag_Print.php" role="data" />
+   <file name="lib/tags/Tag_Switch.php" role="data" />
+   <file name="lib/tags/Tag_Unknown.php" role="data" />
+   <file name="modules/sfTemperPlugin/actions/actions.class.php" role="data" />
+   <file name="modules/sfTemperPlugin/config/module.yml" role="data" />
+   <file name="modules/sfTemperPlugin/templates/_load.php" role="data" />
+   <file name="modules/sfTemperPlugin/templates/loadSuccess.php" role="data" />
+   <file name="LICENSE" role="data" />
+   <file name="README" role="data" />
+  </dir>
+ </contents>
+ <dependencies>
+  <required>
+   <php>
+    <min>5.0.0</min>
+   </php>
+   <pearinstaller>
+    <min>1.4.1</min>
+   </pearinstaller>
+   <package>
+    <name>symfony</name>
+    <channel>pear.symfony-project.com</channel>
+    <min>1.0.0</min>
+    <max>1.2.0</max>
+   </package>
+  </required>
+ </dependencies>
+ <phprelease />
+ <changelog>
+  <release>
+    <version>
+      <release>0.1.0</release>
+      <api>0.1.0</api>
+    </version>
+    <stability>
+      <release>beta</release>
+      <api>beta</api>
+    </stability>
+    <license uri="http://www.symfony-project.com/license">MIT license</license>
+    <notes>
+      * Functional but without some functionalities present in the original Kohana templating library (links, help needed, please).
+    </notes>
+  </release>
+ </changelog>
+</package>

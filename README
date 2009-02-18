@@ -1,0 +1,234 @@
+# sfTemperPlugin
+
+The ``sfTemperPlugin`` is a template compiler based on a Kohana Framework's template parser called Temper.
+
+## Syntax
+
+Temper supports several kind of syntax inside templates. It uses three types of delimiters: ``{}``, ``{{}}`` and ``<prefix:tag></prefix:tag>``.
+See [this page](http://code.google.com/p/temper/wiki/Documentation) for more details.
+
+### Variables
+
+    {=variable}          => <?php echo $variable ?>
+    {=variable|function} => <?php echo function($variable) ?>
+    {=foo.variable}      => <?php echo $foo->getVariable() ?>
+    {/path/to/}          should be http://example.com/path/to/ but it is not yet implemented with the Symfony's routing system
+    {/path/to/=variable} should be http://example.com/path/to/<?php echo $variable ?> but (etc, etc)
+
+### Functions
+
+    {{echo(%foo)}}                          => <?php echo($foo) ?>
+    {{class::method({%foo}, 'arg', 'arg')}} => <?php echo call_user_function_array(array('class', 'method'), array('arg', 'arg')) ?>
+
+### Tags
+
+Tags are represented internally as objects. It allows us to add custom tags or disable those that we don't need to improve global performance. See examples to see default tags syntax.
+
+## Configuration
+
+sfTemperPlugin parameters are configured in app.yml. These are the default values:
+
+    all:
+      sfTemperPlugin:
+        tags:            [if, else, elseif, for, foreach, switch, case, print, block, import]
+        prefix:          't'         # <t:tag ...></t:tag> or <t:tag ... />
+        allow_php:       false
+        allow_helpers:   false
+        remove_comments: true
+        template_dir:    'templates' # maps to sf_upload_dir/templates
+
+You customize the use of tags. For example, if I you want add a tag named ``invoice`` to be used in your templates:
+
+    all:
+      sfTemperPlugin:
+        tags:            [if, else, elseif, for, foreach, switch, case, print, block, import, invoice]
+
+You must create a new class that inherits from Temper_Tag:
+
+    class Tag_Invoice extends Temper_Tag
+    {
+      public function parse_buffer()
+      {
+        $this->require_attributes('id');
+        $title = $this->require_one('title', 'alt');
+        return '<div id="'.$this['id'].'">'.$title.'</div>';
+      }
+    }
+
+And use it in your template:
+
+    <t:invoice id="123" title="test A" />
+    <t:invoice id="234" alt="test B" />
+    
+    <div id="123">test A</div>
+    <div id="234">test B</div>
+
+# Examples
+
+    {{echo({%foo})}}                            => <?php echo($foo);?>
+    {{Example::getArguments({%var1})}}          => <?php echo call_user_func_array(array('Example', 'getArguments'), array($var1)); ?>
+    {{Example::getArguments({%var1}, {%var2})}} => <?php echo call_user_func_array(array('Example', 'getArguments'), array($var1, $var2)); ?>
+    {=obj.a_field}                              => <?php echo $obj->getAField() ?>
+    {=obj.b_field}                              => <?php echo $obj->getBField() ?>
+
+    <ul>                                             => <ul>
+    <t:for var="i" start="1" end="10" increment="1"> => <?php for($i=1; $i<=10;$i+=1):?>
+      <li>{=i}</li>                                  =>   <li><?php echo $i ?></li>
+    </t:for>                                         => <?php endfor;?>
+    </ul>                                            => </ul>
+
+    <ul>                                                    => <ul>
+    <t:foreach var="array" val="v">                         => <?php foreach((array) $array as $v):?>
+      <li>{=v}</li>                                         =>   <li><?php echo $v ?></li>
+    </t:foreach>                                            => <?php endforeach;?>
+    </ul>                                                   => </ul>
+
+    <ul>                                                    => <ul>
+    <t:foreach var="array" key="k" val="v">                 => <?php foreach((array) $array as $k => $v):?>
+      <li>{=k} -> {=v}</li>                                 =>   <li><?php echo $k ?> -> <?php echo $v ?></li>
+    </t:foreach>                                            => <?php endforeach;?>
+    </ul>                                                   => </ul>
+
+    <ul>                                                    => <ul>
+    <t:foreach var="Example::getArray()" key="k" val="v">   => <?php foreach((array) Example::getArray() as $k => $v):?>
+      <li>{=k} -> {=v}</li>                                 =>   <li><?php echo $k ?> -> <?php echo $v ?></li>
+    </t:foreach>                                            => <?php endforeach;?>
+    </ul>                                                   => </ul>
+
+    <ul>                                                    => <ul>
+    <t:foreach var="Example::MYCONSTANT" key="k" val="v">   => <?php foreach((array) Example::MYCONSTANT as $k => $v):?>
+      <li>{=k} -> {=v}</li>                                 =>   <li><?php echo $k ?> -> <?php echo $v ?></li>
+    </t:foreach>                                            => <?php endforeach;?>
+    </ul>                                                   => </ul>
+
+    <p>                                => <p>
+    <t:if isset="var1">                => <?php if(isset($var1) && $var1 != NULL):?>
+      $var1 is set.                    =>   $var1 is set.
+    <t:elseif isset="var2" />          => <?php elseif(isset($var2) && $var2 != NULL):?>
+      $var2 is set.                    =>   $var2 is set.
+    <t:else />                         => <?php else: ?>
+      no var set.                      =>   no var set.
+    </t:if>                            => <?php endif;?>
+    </p>                               => </p>
+                                       => 
+    <p>                                => <p>
+    <t:if isset="var1">                => <?php if(isset($var1) && $var1 != NULL):?>
+      <t:if var="var1" eq="1">         =>   <?php if($var1 == 1):?>
+        $var1 is set to 1              =>     $var1 is set to 1
+      <t:else />                       =>   <?php else: ?>
+        $var1 is different than 1      =>     $var1 is different than 1
+      </t:if>                          =>   <?php endif;?>
+    <t:elseif isset="var2" />          => <?php elseif(isset($var2) && $var2 != NULL):?>
+      <t:if var="var2" gt="1">         =>   <?php if($var2 > 1):?>
+        $var2 is greater than 1        =>     $var2 is greater than 1
+      <t:else />                       =>   <?php else: ?>
+        $var2 is less or equal than 1  =>     $var2 is less or equal than 1
+      </t:if>                          =>   <?php endif;?>
+    <t:else />                         => <?php else: ?>
+      no var set.                      =>   no var set.
+    </t:if>                            => <?php endif;?>
+    </p>                               => </p>
+
+    <t:block id="posts">                                               => <?php if (isset($posts)):?>
+      <div id="posts" style="border:1px dotted red;">POSTS BLOCK</div> =>   <div id="posts" style="border:1px dotted red;">POSTS BLOCK</div>
+    </t:block>                                                         => <?php endif; ?>
+
+    <t:switch var="color">                                  => <?php switch($color) {
+      <t:case val="orange">                                 =>   case "orange": ?>
+        <div style="border:1px dotted orange;">ORANGE</div> =>     <div style="border:1px dotted orange;">ORANGE</div>
+      </t:case>                                             =>   <?php break;
+      <t:case val="red">                                    =>   case "red": ?>
+        <div style="border:1px dotted red;">RED</div>       =>     <div style="border:1px dotted red;">RED</div>
+      </t:case>                                             =>   <?php break;
+      <t:case val="blue">                                   =>   case "blue": ?>
+        <div style="border:1px dotted blue;">BLUE</div>     =>     <div style="border:1px dotted blue;">BLUE</div>
+      </t:case>                                             =>   <?php break;
+      <t:case val="green">                                  =>   case "green": ?>
+        <div style="border:1px dotted green;">GREEN</div>   =>     <div style="border:1px dotted green;">GREEN</div>
+      </t:case>                                             =>   <?php break;
+    </t:switch>                                             =>  } ?>
+
+    <t:import file="prueba.inc.tpl" /> => Parses and includes prueba.inc.tpl as php code.
+
+# Usage
+
+You must enable sfTemperPlugin module at ``enabled_modules: [default, sfTemperPlugin]`` in your ``settings.yml`` and enable the plugin as you usually do with other plugins.
+Lets see a few examples of parsing and reading inside a module called ``temper``.
+
+## Symfony 1.0
+
+    public function executeParse()
+    {
+      if ($file = $this->getRequestParameter('file'))
+      {
+        $to = Temper::getTemplateDirPath()."/$file.php";
+        Temper::factory(Temper::getTemplateDirPath()."/$file.tpl")->parse($to);
+        $this->parsed = $to;
+      }
+      else
+      {
+        $this->parsed = "(NOT PARSED)";
+      }
+    }
+
+    public function executeRead()
+    {
+      if ($file = $this->getRequestParameter('file'))
+      {
+        $this->setFlash('color', 'red');
+        $this->setFlash('posts', 1);
+        $this->setFlash('array', array('a', 'e', 'i', 'o', 'u'));
+        $this->setFlash('invoice', '1234567890');
+        $this->setFlash('partial', Temper::getTemplateDirPath()."/$file.php"); // required 'partial' variable
+        return $this->renderText($this->getPresentationFor('sfTemperPlugin', 'load'));
+      }
+  
+      return sfView::NONE;
+    }
+
+## Symfony 1.1 or 1.2
+
+    public function executeParse(sfWebRequest $request)
+    {
+      if ($file = $request->getParameter('file'))
+      {
+        $to = Temper::getTemplateDirPath()."/$file.php";
+        Temper::factory(Temper::getTemplateDirPath()."/$file.tpl")->parse($to);
+        $this->parsed = $to; // To show path in parseSuccess.php
+      }
+      else
+      {
+        $this->parsed = "(NOT PARSED)";
+      }
+    }
+
+    public function executeRead(sfWebRequest $request)
+    {
+      if ($file = $this->getRequestParameter('file'))
+      {
+        $variables = array(
+          'partial' =>  Temper::getTemplateDirPath()."/$file.php",
+          'color' =>  'red',
+          'posts' =>  1,
+          'array' =>  array('a', 'e', 'i', 'o', 'u'),
+          'invoice' =>  '1234567890',
+          'var2' => 2,
+          'var1' => 1,
+          'foo' => 'foo = var',
+          'var' => 'var = something',
+          'obj' => new Example()
+        );
+        
+        // We pass variables as usually. 'partial' is required
+        return $this->renderPartial('sfTemperPlugin/load', $variables);
+      }
+      
+      return sfView::NONE;
+    }
+
+# Notes
+
+ * See LICENSE to see mine and the original one.
+ * This plugin may be incomplete at this moment.
+ * Feel free of e-mail me (carlos at markhaus.com) with patches and suggestions.
+

@@ -1,0 +1,1 @@
+<?php if (is_file($partial)) include($partial) ?>
