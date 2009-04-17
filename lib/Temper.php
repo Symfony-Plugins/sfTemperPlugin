@@ -35,7 +35,7 @@
 class Temper {
   
   const TEMPER_TAGS            = 'if,else,elseif,for,foreach,switch,case,print,block,import';
-  const TEMPER_PREFIX          = 'ko';
+  const TEMPER_PREFIX          = 't';
   const TEMPER_ALLOW_PHP       = false;
   const TEMPER_ALLOW_HELPERS   = false;
   const TEMPER_REMOVE_COMMENTS = true;
