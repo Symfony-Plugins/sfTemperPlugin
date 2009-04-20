@@ -154,6 +154,11 @@ class Temper {
       $this->buffer = preg_replace('/(^\s*)?<!-- #(.*?)-->/ms', '', $this->buffer);
     }
     
+    if (count(Temper_Tag::$helpers))
+    {
+      $this->buffer = Temper_Tag::get_used_helpers()."\n".$this->buffer;
+    }
+    
     // Si hay que escribir el fichero...
     if ($file)
     {

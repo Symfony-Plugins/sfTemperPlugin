@@ -10,10 +10,10 @@
   <email>carlos@markhaus.com</email>
   <active>yes</active>
  </lead>
- <date>2009-04-17</date>
- <time>11:00:00</time>
+ <date>2009-04-20</date>
+ <time>10:20:00</time>
  <version>
-  <release>0.1.1</release>
+  <release>0.1.2</release>
   <api>0.1.0</api>
  </version>
  <stability>
@@ -64,21 +64,36 @@
  </dependencies>
  <phprelease />
  <changelog>
-   <release>
-     <version>
-       <release>0.1.1</release>
-       <api>0.1.0</api>
-     </version>
-     <stability>
-       <release>beta</release>
-       <api>beta</api>
-     </stability>
-     <license uri="http://www.symfony-project.com/license">MIT license</license>
-     <notes>
-       * Changed prefix to 't' to match the prefix specified in README file.
-       * Functional but without some functionalities present in the original Kohana templating library (links, help needed, please).
-     </notes>
-   </release>
+  <release>
+    <version>
+      <release>0.1.2</release>
+      <api>0.1.0</api>
+    </version>
+    <stability>
+      <release>beta</release>
+      <api>beta</api>
+    </stability>
+    <license uri="http://www.symfony-project.com/license">MIT license</license>
+    <notes>
+      * You can load Symfony helpers inside your tags through the $this->use_helper() method. The use_helper helper will be used in the compiled file's first line.
+      * Functional but without some functionalities present in the original Kohana templating library (links, help needed, please).
+    </notes>
+  </release>
+  <release>
+    <version>
+      <release>0.1.1</release>
+      <api>0.1.0</api>
+    </version>
+    <stability>
+      <release>beta</release>
+      <api>beta</api>
+    </stability>
+    <license uri="http://www.symfony-project.com/license">MIT license</license>
+    <notes>
+      * Changed prefix to 't' to match the prefix specified in README file.
+      * Functional but without some functionalities present in the original Kohana templating library (links, help needed, please).
+    </notes>
+  </release>
   <release>
     <version>
       <release>0.1.0</release>

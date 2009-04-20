@@ -33,6 +33,8 @@
  */
 abstract class Temper_Tag implements ArrayAccess {
   
+  public static $helpers = array();
+  
   protected $buffer = '', $prefix = '', $name = '';
   private $attributes = array();
   
@@ -46,8 +48,27 @@ abstract class Temper_Tag implements ArrayAccess {
    */
   public function __construct($prefix = '', $name = '')
   {
-    $this->prefix = $prefix;
-    $this->name = $name;
+    $this->prefix  = $prefix;
+    $this->name    = $name;
+  }
+  
+  /**
+   * Use this inside your custom tags to add Symfony's helpers to your compiled template
+   */
+  public function use_helper()
+  {
+    $args = func_get_args();
+    self::$helpers = array_unique(array_merge(self::$helpers, $args));
+  }
+  
+  public static function get_used_helpers()
+  {
+    $r = array();
+    foreach (self::$helpers as $h)
+    {
+      $r[] = "'$h'";
+    }
+    return "<?php use_helper(".implode(',', $r).") ?>";
   }
   
   /**
